@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="1024" height="1024" shape-rendering="crispEdges">
+  <!-- Background dark plate with subtle bg-tint -->
+  <rect width="32" height="32" fill="#0c0a10"/>
+  <!-- Soft violet glow ring -->
+  <rect x="1" y="1" width="30" height="30" fill="none" stroke="#1f1a2a" stroke-width="1"/>
+
+  <!-- Pixel "C" — 12px tall × 11px wide, centered.
+       Each rect = 1 grid cell (1px @ 32px viewBox = 32px @ 1024 output) -->
+  <g fill="#b894f5">
+    <!-- top row -->
+    <rect x="11" y="9"  width="9" height="2"/>
+    <rect x="9"  y="10" width="2" height="2"/>
+    <!-- left wall -->
+    <rect x="9"  y="11" width="2" height="11"/>
+    <!-- bottom row -->
+    <rect x="11" y="21" width="9" height="2"/>
+    <rect x="9"  y="20" width="2" height="2"/>
+    <!-- accent dot (pixel sparkle) -->
+    <rect x="20" y="11" width="2" height="2"/>
+    <rect x="20" y="19" width="2" height="2"/>
+  </g>
+
+  <!-- subtle violet shadow row at bottom for depth -->
+  <rect x="9"  y="23" width="11" height="1" fill="#5e6ad2" opacity="0.4"/>
+</svg>

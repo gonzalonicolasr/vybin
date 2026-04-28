@@ -1,0 +1,96 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Default capabilities for Vybin main window",
+  "windows": ["main"],
+  "permissions": [
+    "core:default",
+    "shell:default",
+    "store:default",
+    "fs:default",
+    "notification:default",
+    "http:default",
+    {
+      "identifier": "http:allow-fetch",
+      "allow": [
+        { "url": "https://opencode.ai/*" },
+        { "url": "https://api.openai.com/*" },
+        { "url": "https://api.anthropic.com/*" },
+        { "url": "https://api.groq.com/*" },
+        { "url": "https://api.mistral.ai/*" },
+        { "url": "https://api.deepseek.com/*" },
+        { "url": "https://openrouter.ai/*" },
+        { "url": "https://api.together.xyz/*" },
+        { "url": "http://127.0.0.1:*/*" },
+        { "url": "http://localhost:*/*" }
+      ]
+    },
+    "core:window:allow-minimize",
+    "core:window:allow-toggle-maximize",
+    "core:window:allow-is-maximized",
+    "core:window:allow-close",
+    "core:window:allow-start-dragging",
+    {
+      "identifier": "fs:allow-read-text-file",
+      "allow": [
+        { "path": "$HOME/.cero/**" },
+        { "path": "$APPDATA/.cero/**" }
+      ]
+    },
+    {
+      "identifier": "fs:allow-read-dir",
+      "allow": [
+        { "path": "$HOME/.cero/**" },
+        { "path": "$APPDATA/.cero/**" }
+      ]
+    },
+    {
+      "identifier": "fs:allow-remove",
+      "allow": [
+        { "path": "$HOME/.cero/skills/**" },
+        { "path": "$APPDATA/.cero/skills/**" },
+        { "path": "$HOME/.cero/lessons/**" },
+        { "path": "$APPDATA/.cero/lessons/**" }
+      ]
+    },
+    {
+      "identifier": "fs:allow-write-text-file",
+      "allow": [
+        { "path": "$HOME/.cero/user-model.json" },
+        { "path": "$APPDATA/.cero/user-model.json" },
+        { "path": "$HOME/.cero/cero.config.json" },
+        { "path": "$APPDATA/.cero/cero.config.json" },
+        { "path": "$HOME/.cero/lessons/**" },
+        { "path": "$APPDATA/.cero/lessons/**" },
+        { "path": "$HOME/.cero/skills/**" },
+        { "path": "$APPDATA/.cero/skills/**" },
+        { "path": "$HOME/.cero/temp/**" },
+        { "path": "$APPDATA/.cero/temp/**" }
+      ]
+    },
+    {
+      "identifier": "fs:allow-mkdir",
+      "allow": [
+        { "path": "$HOME/.cero/temp/**" },
+        { "path": "$APPDATA/.cero/temp/**" }
+      ]
+    },
+    {
+      "identifier": "shell:allow-open",
+      "allow": [
+        { "url": "https://*" },
+        { "url": "http://*" },
+        { "url": "file://**" },
+        { "path": "$HOME/.cero/temp/**" },
+        { "path": "$APPDATA/.cero/temp/**" }
+      ]
+    },
+    {
+      "identifier": "fs:allow-exists",
+      "allow": [
+        { "path": "$HOME/.cero/**" },
+        { "path": "$APPDATA/.cero/**" }
+      ]
+    }
+  ]
+}

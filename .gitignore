@@ -1,0 +1,17 @@
+# Studio (Vite/Bun)
+studio/node_modules/
+studio/dist/
+studio/*.local
+studio/.env
+studio/.env.local
+
+# Studio (Tauri/Rust)
+studio/src-tauri/target/
+studio/src-tauri/gen/
+
+# Sidecar binaries (built by CI / release workflow — too large for git)
+studio/src-tauri/binaries/cero-*
+
+# Logs / temp
+*.log
+.DS_Store

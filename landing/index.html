@@ -1,0 +1,1286 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Primary SEO -->
+    <title>Vybin — Free Desktop AI Agent for Vibe Coding</title>
+    <meta
+      name="description"
+      content="Vybin is a free, open desktop AI agent for vibe coders. Self-improving. Multi-model. Multi-tab. Local-first. No subscription."
+    />
+    <meta
+      name="keywords"
+      content="vibe coding, vybin, ai agent, desktop ai, ai pair programmer, free ai coding tool, self-improving agent, ollama desktop, claude desktop, vibe coder"
+    />
+    <meta name="author" content="Ceroclawd" />
+    <meta name="theme-color" content="#0c0a10" />
+    <link rel="canonical" href="https://vybin.ceroclawd.com/" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://vybin.ceroclawd.com/" />
+    <meta property="og:title" content="Vybin — Free Desktop AI Agent for Vibe Coding" />
+    <meta
+      property="og:description"
+      content="Vibe code with an agent that knows you. Self-improving. Multi-model. Local-first. Free."
+    />
+    <meta property="og:image" content="https://vybin.ceroclawd.com/og.png" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Vybin — Free Desktop AI Agent for Vibe Coding" />
+    <meta
+      name="twitter:description"
+      content="Vibe code with an agent that knows you. Free, local, self-improving."
+    />
+    <meta name="twitter:image" content="https://vybin.ceroclawd.com/og.png" />
+
+    <!-- Schema.org SoftwareApplication -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "Vybin",
+        "applicationCategory": "DeveloperApplication",
+        "operatingSystem": "Windows, macOS, Linux",
+        "description": "Free desktop AI agent for vibe coding. Self-improving, multi-model, local-first.",
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "url": "https://vybin.ceroclawd.com/"
+      }
+    </script>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=VT323&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      :root {
+        --bg: #0c0a10;
+        --bg-tint: #110e18;
+        --bg-elev: #15111e;
+        --fg: #e0d8ec;
+        --dim: #7a7390;
+        --muted: #4a4555;
+        --accent: #b894f5;
+        --accent-d: #8a6fd4;
+        --amber: #e5a83a;
+        --magenta: #d177c8;
+        --cyan: #6ad7d1;
+        --green: #4ec94e;
+        --border: #1f1a2a;
+        --border-soft: #181420;
+
+        --pixel-font: "VT323", monospace;
+        --code-font: "JetBrains Mono", monospace;
+
+        --maxw: 1080px;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html {
+        scroll-behavior: smooth;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--fg);
+        font-family: var(--code-font);
+        font-size: 15px;
+        line-height: 1.6;
+        min-height: 100vh;
+        overflow-x: hidden;
+        position: relative;
+      }
+
+      /* CRT scanlines — same effect as the app */
+      body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background: repeating-linear-gradient(
+          0deg,
+          rgba(0, 0, 0, 0) 0px,
+          rgba(0, 0, 0, 0) 2px,
+          rgba(184, 148, 245, 0.025) 2px,
+          rgba(184, 148, 245, 0.025) 3px
+        );
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      body::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(
+          ellipse at center,
+          transparent 0%,
+          transparent 60%,
+          rgba(0, 0, 0, 0.4) 100%
+        );
+        pointer-events: none;
+        z-index: 2;
+      }
+
+      .container {
+        max-width: var(--maxw);
+        margin: 0 auto;
+        padding: 0 24px;
+        position: relative;
+        z-index: 3;
+      }
+
+      /* ── Nav ─────────────────────────────────────────────────────────── */
+      nav {
+        padding: 24px 0;
+        border-bottom: 1px solid var(--border-soft);
+      }
+
+      .nav-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+      }
+
+      .logo {
+        font-family: var(--pixel-font);
+        font-size: 28px;
+        color: var(--accent);
+        text-decoration: none;
+        letter-spacing: 0.02em;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .logo::before {
+        content: "[";
+        color: var(--dim);
+      }
+
+      .logo::after {
+        content: "]";
+        color: var(--dim);
+      }
+
+      .nav-links {
+        display: flex;
+        gap: 28px;
+        align-items: center;
+      }
+
+      .nav-links a {
+        color: var(--dim);
+        text-decoration: none;
+        font-size: 13px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        transition: color 120ms;
+      }
+
+      .nav-links a:hover {
+        color: var(--fg);
+      }
+
+      .nav-links a.cta {
+        color: var(--accent);
+        border: 1px solid var(--accent-d);
+        padding: 6px 14px;
+      }
+
+      .nav-links a.cta:hover {
+        background: rgba(184, 148, 245, 0.08);
+      }
+
+      /* ── Hero ────────────────────────────────────────────────────────── */
+      .hero {
+        padding: 80px 0 100px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        isolation: isolate;
+      }
+
+      .hero .container {
+        position: relative;
+        z-index: 4;
+      }
+
+      /* Sunset sky background */
+      .hero-bg {
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        background: linear-gradient(
+          180deg,
+          #1a0a2a 0%,
+          #2a1838 18%,
+          #5a1f5e 35%,
+          #a83468 55%,
+          #e8694a 75%,
+          #f5b048 90%,
+          #f9d670 100%
+        );
+        opacity: 0.55;
+      }
+
+      /* Soft fade so the sunset blends into the page background below */
+      .hero-bg::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          180deg,
+          transparent 0%,
+          transparent 50%,
+          var(--bg) 100%
+        );
+        pointer-events: none;
+      }
+
+      /* Pixel sun + palm + grid SVG */
+      .hero-art {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+        pointer-events: none;
+      }
+
+      .hero-art svg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+
+      /* Subtle dark fade over sunset, so hero text stays readable */
+      .hero-veil {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        background: radial-gradient(
+          ellipse 70% 50% at 50% 60%,
+          rgba(12, 10, 16, 0.55) 0%,
+          rgba(12, 10, 16, 0.2) 60%,
+          transparent 100%
+        );
+        pointer-events: none;
+      }
+
+      /* On the sunset, the existing hero-tag amber clashes — switch to cream */
+      .hero .hero-tag {
+        color: #ffe8b0;
+        text-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+      }
+
+      .hero h1 {
+        text-shadow: 0 2px 0 rgba(0, 0, 0, 0.5);
+      }
+
+      .hero h1 .accent {
+        color: #ffd089;
+      }
+
+      .hero .hero-sub {
+        color: #f0d8e8;
+        text-shadow: 0 1px 0 rgba(0, 0, 0, 0.4);
+      }
+
+      .hero .hero-meta {
+        color: #c8b0d0;
+      }
+
+      .hero-tag {
+        display: inline-block;
+        font-family: var(--pixel-font);
+        font-size: 18px;
+        color: var(--amber);
+        margin-bottom: 24px;
+        letter-spacing: 0.04em;
+      }
+
+      .hero-tag::before {
+        content: "▸ ";
+      }
+
+      .hero h1 {
+        font-family: var(--pixel-font);
+        font-size: clamp(40px, 7vw, 72px);
+        line-height: 1.1;
+        color: var(--fg);
+        margin-bottom: 24px;
+        font-weight: normal;
+        letter-spacing: 0.01em;
+      }
+
+      .hero h1 .accent {
+        color: var(--accent);
+      }
+
+      .hero-sub {
+        font-size: 17px;
+        color: var(--dim);
+        max-width: 560px;
+        margin: 0 auto 40px;
+        line-height: 1.7;
+      }
+
+      .hero-cta {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 48px;
+      }
+
+      .btn {
+        font-family: var(--code-font);
+        font-size: 14px;
+        font-weight: 500;
+        padding: 14px 28px;
+        border: 1px solid;
+        background: transparent;
+        cursor: pointer;
+        text-decoration: none;
+        text-transform: uppercase;
+        letter-spacing: 0.06em;
+        transition: all 150ms;
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .btn-primary {
+        color: var(--bg);
+        background: var(--accent);
+        border-color: var(--accent);
+      }
+
+      .btn-primary:hover {
+        background: var(--accent-d);
+        border-color: var(--accent-d);
+      }
+
+      .btn-ghost {
+        color: var(--fg);
+        border-color: var(--border);
+      }
+
+      .btn-ghost:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      .hero-meta {
+        display: inline-flex;
+        gap: 24px;
+        font-size: 12px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      .hero-meta span::before {
+        content: "● ";
+        color: var(--green);
+      }
+
+      /* ── Terminal demo block ─────────────────────────────────────────── */
+      .terminal {
+        max-width: 720px;
+        margin: 0 auto 80px;
+        background: var(--bg-tint);
+        border: 1px solid var(--border);
+        font-family: var(--code-font);
+        font-size: 13px;
+        text-align: left;
+        position: relative;
+      }
+
+      .terminal-bar {
+        background: var(--bg-elev);
+        border-bottom: 1px solid var(--border);
+        padding: 8px 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 12px;
+        color: var(--dim);
+      }
+
+      .terminal-dot {
+        width: 8px;
+        height: 8px;
+        background: var(--muted);
+      }
+
+      .terminal-title {
+        margin-left: 12px;
+        color: var(--dim);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 11px;
+      }
+
+      .terminal-body {
+        padding: 24px;
+        line-height: 1.8;
+      }
+
+      .term-prompt {
+        color: var(--accent);
+      }
+
+      .term-user {
+        color: var(--magenta);
+      }
+
+      .term-cero {
+        color: var(--cyan);
+      }
+
+      .term-comment {
+        color: var(--muted);
+      }
+
+      .term-ok {
+        color: var(--green);
+      }
+
+      /* ── Section base ────────────────────────────────────────────────── */
+      section {
+        padding: 80px 0;
+        border-top: 1px solid var(--border-soft);
+      }
+
+      .section-tag {
+        font-family: var(--pixel-font);
+        color: var(--amber);
+        font-size: 16px;
+        margin-bottom: 12px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+      }
+
+      .section-tag::before {
+        content: "// ";
+        color: var(--muted);
+      }
+
+      .section-title {
+        font-family: var(--pixel-font);
+        font-size: clamp(28px, 4vw, 44px);
+        color: var(--fg);
+        margin-bottom: 20px;
+        font-weight: normal;
+        line-height: 1.2;
+      }
+
+      .section-lead {
+        color: var(--dim);
+        font-size: 16px;
+        max-width: 620px;
+        margin-bottom: 56px;
+        line-height: 1.7;
+      }
+
+      /* ── Features grid ───────────────────────────────────────────────── */
+      .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 1px;
+        background: var(--border);
+        border: 1px solid var(--border);
+      }
+
+      .feature {
+        background: var(--bg);
+        padding: 32px;
+        transition: background 150ms;
+      }
+
+      .feature:hover {
+        background: var(--bg-tint);
+      }
+
+      .feature-icon {
+        font-family: var(--pixel-font);
+        font-size: 28px;
+        color: var(--accent);
+        margin-bottom: 12px;
+      }
+
+      .feature h3 {
+        font-family: var(--pixel-font);
+        font-size: 22px;
+        color: var(--fg);
+        margin-bottom: 8px;
+        font-weight: normal;
+        letter-spacing: 0.02em;
+      }
+
+      .feature p {
+        color: var(--dim);
+        font-size: 14px;
+        line-height: 1.6;
+      }
+
+      .feature .tags {
+        margin-top: 14px;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .tag {
+        font-size: 10px;
+        color: var(--muted);
+        background: var(--bg-elev);
+        padding: 3px 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        border: 1px solid var(--border);
+      }
+
+      /* ── Comparison table ────────────────────────────────────────────── */
+      .compare {
+        border: 1px solid var(--border);
+        font-size: 14px;
+      }
+
+      .compare-row {
+        display: grid;
+        grid-template-columns: 1.4fr 1fr 1fr 1fr 1fr;
+        border-bottom: 1px solid var(--border-soft);
+      }
+
+      .compare-row:last-child {
+        border-bottom: none;
+      }
+
+      .compare-cell {
+        padding: 14px 18px;
+        border-right: 1px solid var(--border-soft);
+        color: var(--dim);
+      }
+
+      .compare-cell:last-child {
+        border-right: none;
+      }
+
+      .compare-row.head .compare-cell {
+        background: var(--bg-tint);
+        color: var(--fg);
+        font-family: var(--pixel-font);
+        font-size: 18px;
+      }
+
+      .compare-row.head .compare-cell:first-child {
+        color: var(--dim);
+        font-family: var(--code-font);
+        font-size: 11px;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+      }
+
+      .compare .vybin {
+        color: var(--accent) !important;
+      }
+
+      .compare .yes {
+        color: var(--green);
+      }
+
+      .compare .no {
+        color: var(--red);
+      }
+
+      .compare .partial {
+        color: var(--amber);
+      }
+
+      .compare-cell:first-child {
+        color: var(--fg);
+      }
+
+      /* ── How it works ───────────────────────────────────────────────── */
+      .steps {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 24px;
+      }
+
+      .step {
+        border: 1px solid var(--border);
+        padding: 28px;
+        position: relative;
+      }
+
+      .step-num {
+        font-family: var(--pixel-font);
+        font-size: 28px;
+        color: var(--amber);
+        margin-bottom: 12px;
+      }
+
+      .step h4 {
+        font-family: var(--pixel-font);
+        font-size: 22px;
+        color: var(--fg);
+        margin-bottom: 8px;
+        font-weight: normal;
+      }
+
+      .step p {
+        color: var(--dim);
+        font-size: 14px;
+      }
+
+      /* ── Final CTA ─────────────────────────────────────────────────── */
+      .final-cta {
+        text-align: center;
+        padding: 100px 0;
+        border-top: 1px solid var(--border-soft);
+      }
+
+      .final-cta h2 {
+        font-family: var(--pixel-font);
+        font-size: clamp(36px, 6vw, 60px);
+        color: var(--fg);
+        font-weight: normal;
+        margin-bottom: 20px;
+        line-height: 1.15;
+      }
+
+      .final-cta h2 .accent {
+        color: var(--accent);
+      }
+
+      .final-cta p {
+        color: var(--dim);
+        margin-bottom: 32px;
+      }
+
+      /* ── Footer ─────────────────────────────────────────────────────── */
+      footer {
+        border-top: 1px solid var(--border-soft);
+        padding: 32px 0;
+        font-size: 13px;
+        color: var(--muted);
+      }
+
+      .footer-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+
+      .footer-links {
+        display: flex;
+        gap: 20px;
+      }
+
+      .footer-links a {
+        color: var(--dim);
+        text-decoration: none;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 12px;
+      }
+
+      .footer-links a:hover {
+        color: var(--accent);
+      }
+
+      /* ── Mobile ─────────────────────────────────────────────────────── */
+      @media (max-width: 720px) {
+        .nav-links {
+          gap: 14px;
+        }
+
+        .nav-links a:not(.cta) {
+          display: none;
+        }
+
+        .hero {
+          padding: 60px 0 80px;
+        }
+
+        section {
+          padding: 60px 0;
+        }
+
+        .compare-row {
+          grid-template-columns: 1.4fr 1fr;
+        }
+
+        .compare-row .compare-cell:nth-child(n + 4) {
+          display: none;
+        }
+
+        .compare-cell {
+          padding: 10px 12px;
+          font-size: 13px;
+        }
+
+        .compare-row.head .compare-cell {
+          font-size: 14px;
+        }
+      }
+
+      /* ── Selection + focus ──────────────────────────────────────────── */
+      ::selection {
+        background: var(--accent);
+        color: var(--bg);
+      }
+
+      a:focus-visible,
+      button:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+    </style>
+  </head>
+  <body class="theme-violet">
+    <!-- ── Top nav ─────────────────────────────────────────────────────── -->
+    <nav>
+      <div class="container nav-row">
+        <a href="#" class="logo">VYBIN</a>
+        <div class="nav-links">
+          <a href="#features">Features</a>
+          <a href="#compare">vs Others</a>
+          <a href="#how">How it works</a>
+          <a href="https://github.com/ceroclawd/vybin" class="cta">Download</a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ── Hero ────────────────────────────────────────────────────────── -->
+    <header class="hero">
+      <!-- Sunset sky -->
+      <div class="hero-bg"></div>
+
+      <!-- Pixel-art scene: 2 palms framing sun + water reflection -->
+      <div class="hero-art" aria-hidden="true">
+        <svg
+          viewBox="0 0 1200 600"
+          preserveAspectRatio="xMidYMin slice"
+          shape-rendering="geometricPrecision"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <defs>
+            <radialGradient id="sun-grad" cx="0.5" cy="0.45" r="0.6">
+              <stop offset="0%"   stop-color="#fff5c0" />
+              <stop offset="40%"  stop-color="#ffd070" />
+              <stop offset="80%"  stop-color="#ff8a50" />
+              <stop offset="100%" stop-color="#e8694a" />
+            </radialGradient>
+            <linearGradient id="mtn-far" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%"   stop-color="#3a1f4a" />
+              <stop offset="100%" stop-color="#1a0a2a" />
+            </linearGradient>
+            <clipPath id="sun-clip">
+              <circle cx="600" cy="240" r="120" />
+            </clipPath>
+          </defs>
+
+          <!-- Stars in upper sky -->
+          <g fill="#ffe8b0">
+            <rect x="80"   y="40"  width="2" height="2" />
+            <rect x="180"  y="80"  width="2" height="2" />
+            <rect x="270"  y="30"  width="3" height="3" />
+            <rect x="360"  y="100" width="2" height="2" />
+            <rect x="440"  y="60"  width="2" height="2" />
+            <rect x="120"  y="130" width="2" height="2" />
+            <rect x="240"  y="160" width="2" height="2" />
+            <rect x="510"  y="140" width="2" height="2" />
+            <rect x="60"   y="170" width="2" height="2" />
+            <rect x="330"  y="180" width="3" height="3" />
+            <rect x="40"   y="100" width="2" height="2" />
+            <rect x="700"  y="50"  width="2" height="2" />
+            <rect x="780"  y="90"  width="3" height="3" />
+            <rect x="850"  y="40"  width="2" height="2" />
+            <rect x="920"  y="120" width="2" height="2" />
+            <rect x="1010" y="70"  width="2" height="2" />
+            <rect x="1080" y="150" width="2" height="2" />
+            <rect x="1140" y="100" width="2" height="2" />
+            <rect x="900"  y="170" width="2" height="2" />
+            <rect x="1060" y="180" width="2" height="2" />
+          </g>
+
+          <!-- Sun glow halos -->
+          <circle cx="600" cy="240" r="180" fill="#ff8a50" opacity="0.10" />
+          <circle cx="600" cy="240" r="150" fill="#ffd070" opacity="0.18" />
+
+          <!-- Big sun -->
+          <circle cx="600" cy="240" r="120" fill="url(#sun-grad)" />
+
+          <!-- 80s horizontal band cuts on lower half of sun -->
+          <g clip-path="url(#sun-clip)">
+            <rect x="480" y="350" width="240" height="8" fill="#1a0a2a" opacity="0.55" />
+            <rect x="480" y="335" width="240" height="6" fill="#1a0a2a" opacity="0.5" />
+            <rect x="480" y="318" width="240" height="5" fill="#1a0a2a" opacity="0.45" />
+            <rect x="480" y="302" width="240" height="4" fill="#1a0a2a" opacity="0.4" />
+            <rect x="480" y="288" width="240" height="3" fill="#1a0a2a" opacity="0.35" />
+            <rect x="480" y="276" width="240" height="2" fill="#1a0a2a" opacity="0.3" />
+          </g>
+
+          <!-- Horizon glow band behind mountains -->
+          <ellipse cx="600" cy="395" rx="600" ry="22" fill="#ff8a50" opacity="0.35" />
+          <ellipse cx="600" cy="398" rx="400" ry="12" fill="#ffd089" opacity="0.45" />
+
+          <!-- Distant mountain silhouettes (lighter purple) -->
+          <polygon fill="url(#mtn-far)" opacity="0.85"
+            points="0,395 60,355 130,380 200,330 280,365 360,320 440,355 520,330 600,360 680,335 760,370 840,330 920,360 1000,335 1080,365 1160,340 1200,360 1200,400 0,400" />
+
+          <!-- Closer mountains (very dark) -->
+          <polygon fill="#0a0510" opacity="0.95"
+            points="0,405 80,380 160,395 240,375 320,400 400,378 480,395 560,372 640,400 720,378 800,395 880,373 960,400 1040,380 1120,395 1200,378 1200,410 0,410" />
+
+          <!-- Horizon line bright glow -->
+          <rect x="0" y="408" width="1200" height="2" fill="#f9d670" opacity="0.55" />
+          <rect x="0" y="406" width="1200" height="1" fill="#fff5c0" opacity="0.4" />
+
+          <!-- Synthwave grid: horizontal lines (perspective spacing) -->
+          <g stroke="#b894f5" fill="none" stroke-width="1.5">
+            <line x1="0" y1="420" x2="1200" y2="420" opacity="0.55" />
+            <line x1="0" y1="437" x2="1200" y2="437" opacity="0.5" />
+            <line x1="0" y1="458" x2="1200" y2="458" opacity="0.45" />
+            <line x1="0" y1="485" x2="1200" y2="485" opacity="0.4" />
+            <line x1="0" y1="520" x2="1200" y2="520" opacity="0.35" />
+            <line x1="0" y1="565" x2="1200" y2="565" opacity="0.3" />
+          </g>
+
+          <!-- Vertical perspective lines converging at horizon -->
+          <g stroke="#b894f5" fill="none" stroke-width="1.5" opacity="0.45">
+            <line x1="-200" y1="600" x2="540"  y2="410" />
+            <line x1="0"    y1="600" x2="555"  y2="410" />
+            <line x1="180"  y1="600" x2="568"  y2="410" />
+            <line x1="340"  y1="600" x2="580"  y2="410" />
+            <line x1="480"  y1="600" x2="591"  y2="410" />
+            <line x1="600"  y1="600" x2="600"  y2="410" />
+            <line x1="720"  y1="600" x2="609"  y2="410" />
+            <line x1="860"  y1="600" x2="620"  y2="410" />
+            <line x1="1020" y1="600" x2="632"  y2="410" />
+            <line x1="1200" y1="600" x2="645"  y2="410" />
+            <line x1="1400" y1="600" x2="660"  y2="410" />
+          </g>
+        </svg>
+      </div>
+
+      <!-- Soft veil over the sunset to keep text readable -->
+      <div class="hero-veil"></div>
+
+      <div class="container">
+        <div class="hero-tag">VIBE CODING · DESKTOP · FREE</div>
+        <h1>
+          Vibe code with an<br />
+          agent that <span class="accent">knows you</span>.
+        </h1>
+        <p class="hero-sub">
+          Vybin is a free, open desktop AI agent for vibe coders. Self-improving.
+          Multi-model. Multi-tab. Local-first. No subscription, ever.
+        </p>
+        <div class="hero-cta">
+          <a href="https://github.com/ceroclawd/vybin/releases" class="btn btn-primary">
+            ▸ Download Vybin
+          </a>
+          <a href="https://github.com/ceroclawd/vybin" class="btn btn-ghost">
+            View on GitHub
+          </a>
+        </div>
+        <div class="hero-meta">
+          <span>Free forever</span>
+          <span>Local-first</span>
+          <span>Open source</span>
+        </div>
+      </div>
+
+      <!-- Terminal demo -->
+      <div class="container">
+        <div class="terminal" style="margin-top: 60px;">
+          <div class="terminal-bar">
+            <div class="terminal-dot"></div>
+            <div class="terminal-dot"></div>
+            <div class="terminal-dot"></div>
+            <span class="terminal-title">vybin · session #1</span>
+          </div>
+          <div class="terminal-body">
+            <div><span class="term-prompt">▸</span> <span class="term-user">build me a landing page in the style of vercel</span></div>
+            <div style="height: 8px;"></div>
+            <div><span class="term-comment">[ skill recall: landing-page-vercel-style · used 3× before ]</span></div>
+            <div><span class="term-comment">[ user-model: prefers tailwind · prefers static html · always wants OG tags ]</span></div>
+            <div style="height: 8px;"></div>
+            <div><span class="term-cero">vybin →</span> got it. spinning up tailwind base, copying your <span class="term-prompt">vercel-clone</span> skill, adding OG meta. running in sandbox first.</div>
+            <div style="height: 8px;"></div>
+            <div><span class="term-comment">[ sandbox: docker · skill executed · 1 lesson saved ]</span></div>
+            <div><span class="term-ok">✓ landing.html ready · ./preview opens it</span></div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ── Features grid ───────────────────────────────────────────────── -->
+    <section id="features">
+      <div class="container">
+        <div class="section-tag">FEATURES</div>
+        <h2 class="section-title">Everything a vibe coder needs.<br />In one desktop app.</h2>
+        <p class="section-lead">
+          Vybin ships with a complete agent runtime, 8 model providers, 6 sandboxes,
+          a multi-platform gateway, a cron scheduler, and ~30 built-in tools — all
+          local, all free.
+        </p>
+
+        <div class="features">
+          <div class="feature">
+            <div class="feature-icon">[★]</div>
+            <h3>Self-improving</h3>
+            <p>
+              Skills auto-create and improve turn by turn. Lessons persist across
+              sessions. A user-model learns who you are — your stack, projects,
+              preferences, expertise.
+            </p>
+            <div class="tags">
+              <span class="tag">SKILLS</span>
+              <span class="tag">LESSONS</span>
+              <span class="tag">USER MODEL</span>
+            </div>
+          </div>
+
+          <div class="feature">
+            <div class="feature-icon">[◆]</div>
+            <h3>8 model providers</h3>
+            <p>
+              Anthropic, OpenAI, Bedrock, Gemini, OpenRouter, Ollama (local), Groq,
+              Mistral / DeepSeek / Together. Credential pool with automatic failover.
+            </p>
+            <div class="tags">
+              <span class="tag">CLOUD</span>
+              <span class="tag">LOCAL</span>
+              <span class="tag">FAILOVER</span>
+            </div>
+          </div>
+
+          <div class="feature">
+            <div class="feature-icon">[▣]</div>
+            <h3>6 sandboxes</h3>
+            <p>
+              Run code in Local, Docker, SSH, Modal, Daytona, or Singularity.
+              Isolation when you want it, speed when you don't.
+            </p>
+            <div class="tags">
+              <span class="tag">DOCKER</span>
+              <span class="tag">SSH</span>
+              <span class="tag">MODAL</span>
+            </div>
+          </div>
+
+          <div class="feature">
+            <div class="feature-icon">[≡]</div>
+            <h3>Multi-tabs</h3>
+            <p>
+              Ctrl+T opens a new chat tab. Each one runs its own agent process,
+              its own memory, its own skills. Like an IDE, but for conversations.
+            </p>
+            <div class="tags">
+              <span class="tag">CTRL+T</span>
+              <span class="tag">PARALLEL</span>
+            </div>
+          </div>
+
+          <div class="feature">
+            <div class="feature-icon">[◉]</div>
+            <h3>Native gateway</h3>
+            <p>
+              Drive your agent from Telegram, Discord, WebSocket or HTTP API
+              (OpenAI-compatible). Your assistant, where you already are.
+            </p>
+            <div class="tags">
+              <span class="tag">TELEGRAM</span>
+              <span class="tag">DISCORD</span>
+              <span class="tag">WS</span>
+              <span class="tag">HTTP</span>
+            </div>
+          </div>
+
+          <div class="feature">
+            <div class="feature-icon">[⏱]</div>
+            <h3>Cron scheduler</h3>
+            <p>
+              Schedule agents that run on their own. "Every Monday at 9, review the
+              new PRs and send me a summary on Telegram." Done.
+            </p>
+            <div class="tags">
+              <span class="tag">CRON</span>
+              <span class="tag">SQLITE</span>
+            </div>
+          </div>
+
+          <div class="feature">
+            <div class="feature-icon">[⚙]</div>
+            <h3>~30 tools out of the box</h3>
+            <p>
+              Browser (Playwright), voice (STT + TTS), vision + image gen, web
+              search/extract/crawl, code execution, delegate, todo, checkpoints,
+              skill manager, memory.
+            </p>
+            <div class="tags">
+              <span class="tag">BROWSER</span>
+              <span class="tag">VOICE</span>
+              <span class="tag">VISION</span>
+              <span class="tag">WEB</span>
+            </div>
+          </div>
+
+          <div class="feature">
+            <div class="feature-icon">[⌬]</div>
+            <h3>MCP-native</h3>
+            <p>
+              All your Model Context Protocol servers, plug-and-play. Vybin speaks
+              MCP natively — no wrappers, no proxies, no fuss.
+            </p>
+            <div class="tags">
+              <span class="tag">MCP</span>
+              <span class="tag">PLUG-N-PLAY</span>
+            </div>
+          </div>
+
+          <div class="feature">
+            <div class="feature-icon">[▤]</div>
+            <h3>Stats &amp; usage</h3>
+            <p>
+              Tokens, costs, providers, latency. A dashboard that tells you
+              exactly what you spent and where, without sending data anywhere.
+            </p>
+            <div class="tags">
+              <span class="tag">DASHBOARD</span>
+              <span class="tag">LOCAL</span>
+            </div>
+          </div>
+
+          <div class="feature">
+            <div class="feature-icon">[$0]</div>
+            <h3>Free, local, yours</h3>
+            <p>
+              No server in the middle. No subscription. Settings live in your
+              machine. Skills, lessons and user-model all stored under
+              <code>~/.cero/</code>. You own everything.
+            </p>
+            <div class="tags">
+              <span class="tag">OPEN SOURCE</span>
+              <span class="tag">PRIVACY</span>
+            </div>
+          </div>
+
+          <div class="feature">
+            <div class="feature-icon">[▸]</div>
+            <h3>8 slash commands</h3>
+            <p>
+              <code>/new</code>, <code>/stop</code>, <code>/retry</code>,
+              <code>/undo</code>, <code>/personality</code>, <code>/compress</code>,
+              <code>/usage</code>, <code>/insights</code>. Power-user shortcuts
+              built in.
+            </p>
+            <div class="tags">
+              <span class="tag">SHORTCUTS</span>
+            </div>
+          </div>
+
+          <div class="feature">
+            <div class="feature-icon">[◐]</div>
+            <h3>CRT aesthetic</h3>
+            <p>
+              Pixel fonts, scanlines, terminal palette. Three themes (violet,
+              lima, amber). It's a tool that <em>looks</em> like fun to use.
+            </p>
+            <div class="tags">
+              <span class="tag">VT323</span>
+              <span class="tag">PIXEL</span>
+              <span class="tag">3 THEMES</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Comparison ──────────────────────────────────────────────────── -->
+    <section id="compare">
+      <div class="container">
+        <div class="section-tag">VS OTHERS</div>
+        <h2 class="section-title">Why Vybin?</h2>
+        <p class="section-lead">
+          A quick honest comparison. Other tools are great too — but if you're
+          vibe coding, you probably want something that's free, local, and learns
+          you.
+        </p>
+
+        <div class="compare">
+          <div class="compare-row head">
+            <div class="compare-cell">FEATURE</div>
+            <div class="compare-cell vybin">Vybin</div>
+            <div class="compare-cell">Cursor</div>
+            <div class="compare-cell">Claude Code</div>
+            <div class="compare-cell">Devin</div>
+          </div>
+          <div class="compare-row">
+            <div class="compare-cell">Free forever</div>
+            <div class="compare-cell vybin yes">Yes</div>
+            <div class="compare-cell partial">Limited</div>
+            <div class="compare-cell partial">Pay-per-use</div>
+            <div class="compare-cell no">No ($500+)</div>
+          </div>
+          <div class="compare-row">
+            <div class="compare-cell">Self-improving (skills + lessons)</div>
+            <div class="compare-cell vybin yes">Yes</div>
+            <div class="compare-cell no">No</div>
+            <div class="compare-cell partial">Memory only</div>
+            <div class="compare-cell partial">Internal</div>
+          </div>
+          <div class="compare-row">
+            <div class="compare-cell">User-model (knows who you are)</div>
+            <div class="compare-cell vybin yes">Yes</div>
+            <div class="compare-cell no">No</div>
+            <div class="compare-cell no">No</div>
+            <div class="compare-cell no">No</div>
+          </div>
+          <div class="compare-row">
+            <div class="compare-cell">Local models (Ollama)</div>
+            <div class="compare-cell vybin yes">Yes</div>
+            <div class="compare-cell no">No</div>
+            <div class="compare-cell no">No</div>
+            <div class="compare-cell no">No</div>
+          </div>
+          <div class="compare-row">
+            <div class="compare-cell">Multi-platform gateway (Telegram/Discord)</div>
+            <div class="compare-cell vybin yes">Yes</div>
+            <div class="compare-cell no">No</div>
+            <div class="compare-cell no">No</div>
+            <div class="compare-cell partial">Slack only</div>
+          </div>
+          <div class="compare-row">
+            <div class="compare-cell">Cron scheduler</div>
+            <div class="compare-cell vybin yes">Yes</div>
+            <div class="compare-cell no">No</div>
+            <div class="compare-cell no">No</div>
+            <div class="compare-cell partial">Internal</div>
+          </div>
+          <div class="compare-row">
+            <div class="compare-cell">100% local data</div>
+            <div class="compare-cell vybin yes">Yes</div>
+            <div class="compare-cell no">No</div>
+            <div class="compare-cell partial">CLI</div>
+            <div class="compare-cell no">Cloud</div>
+          </div>
+          <div class="compare-row">
+            <div class="compare-cell">Open source</div>
+            <div class="compare-cell vybin yes">Yes</div>
+            <div class="compare-cell no">No</div>
+            <div class="compare-cell no">No</div>
+            <div class="compare-cell no">No</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── How it works ────────────────────────────────────────────────── -->
+    <section id="how">
+      <div class="container">
+        <div class="section-tag">HOW IT WORKS</div>
+        <h2 class="section-title">From install to first vibe in 90 seconds.</h2>
+        <p class="section-lead">
+          No accounts. No setup wizard from hell. Drop in your API key (or point
+          it at Ollama) and start.
+        </p>
+
+        <div class="steps">
+          <div class="step">
+            <div class="step-num">01</div>
+            <h4>Download</h4>
+            <p>
+              Grab the .msi (Windows), .dmg (macOS) or .AppImage (Linux). Single
+              binary, no Electron bloat.
+            </p>
+          </div>
+          <div class="step">
+            <div class="step-num">02</div>
+            <h4>Pick a model</h4>
+            <p>
+              Drop a key from Anthropic / OpenAI / OpenRouter, or aim it at your
+              local Ollama. Switch any time.
+            </p>
+          </div>
+          <div class="step">
+            <div class="step-num">03</div>
+            <h4>Vibe</h4>
+            <p>
+              Open a tab. Type what you want. Vybin learns your style, builds
+              skills, remembers lessons. Every session you ship faster.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Final CTA ───────────────────────────────────────────────────── -->
+    <section class="final-cta">
+      <div class="container">
+        <h2>
+          Stop renting agents.<br />
+          <span class="accent">Own one.</span>
+        </h2>
+        <p>Free. Local. Self-improving. No cap.</p>
+        <div class="hero-cta">
+          <a href="https://github.com/ceroclawd/vybin/releases" class="btn btn-primary">
+            ▸ Download Vybin
+          </a>
+          <a href="https://github.com/ceroclawd/vybin" class="btn btn-ghost">
+            Star on GitHub
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Footer ──────────────────────────────────────────────────────── -->
+    <footer>
+      <div class="container footer-row">
+        <div>
+          <span style="color: var(--accent); font-family: var(--pixel-font); font-size: 18px;"
+            >VYBIN</span
+          >
+          · made by
+          <a
+            href="https://ceroclawd.com"
+            style="color: var(--dim); text-decoration: underline;"
+            >ceroclawd</a
+          >
+        </div>
+        <div class="footer-links">
+          <a href="https://github.com/ceroclawd/vybin">GitHub</a>
+          <a href="https://github.com/ceroclawd/vybin/releases">Releases</a>
+          <a href="https://github.com/ceroclawd/vybin/blob/main/README.md">Docs</a>
+          <a href="https://ceroclawd.com">Ceroclawd</a>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
