@@ -1,4 +1,4 @@
-# cero studio — STATUS de migración (Fase 8)
+# Vybin — STATUS (Fase 8 / pre-v0.1)
 
 > Estado al cierre del día. Todo el trabajo se hizo directo (dashboard de
 > CeroSpace estuvo offline durante esta fase, no se pudo delegar al equipo).

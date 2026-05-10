@@ -3481,3 +3481,298 @@ button:focus-visible {
   gap: 4px;
   width: max-content;
 }
+
+/* Reconnect button — replaces the static "offline" text in the header so
+   the user can recover the sidecar without opening Settings. */
+.header-reconnect-btn {
+  background: transparent;
+  color: var(--red);
+  border: 1px solid var(--red);
+  padding: 2px 8px;
+  font: inherit;
+  cursor: pointer;
+  letter-spacing: 0.06em;
+  transition: background 0.12s ease-out;
+}
+.header-reconnect-btn:hover {
+  background: rgba(217, 106, 106, 0.15);
+}
+.header-reconnect-btn:active {
+  background: rgba(217, 106, 106, 0.3);
+}
+
+/* ──────────────────────────────────────────────────────────────────────────
+   Mascot — pixel-art CRT-head living in the corner. README-spec compliant:
+   states (idle/think/cheer/x-eyes/level-up), XP bar, level-up banner.
+   Sound is intentionally not wired yet (off by default per spec).
+   ────────────────────────────────────────────────────────────────────────── */
+
+.mascot {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 100;
+  width: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  pointer-events: auto;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.55));
+  user-select: none;
+}
+
+.mascot-svg {
+  width: 80px;
+  height: 120px;
+  transition: transform 0.15s ease-out;
+}
+
+/* shared SVG fills */
+.m-shell    { fill: #1a1424; }
+.m-screen   { fill: #060410; }
+.m-fg       { fill: var(--fg); }
+.m-accent   { fill: var(--accent); }
+.m-eye      { fill: var(--accent); }
+.m-mouth    { fill: var(--accent); }
+.m-led      { fill: var(--green); }
+.m-scanline { fill: rgba(184, 148, 245, 0.07); }
+
+/* per-state LED colour */
+.mascot[data-state="think"]    .m-led { fill: var(--amber); }
+.mascot[data-state="cheer"]    .m-led { fill: var(--green); animation: m-led-pulse 0.6s ease-out 2; }
+.mascot[data-state="x-eyes"]   .m-led { fill: var(--red); }
+.mascot[data-state="level-up"] .m-led { fill: var(--magenta); }
+
+/* per-state body anim */
+.mascot[data-state="idle"]     .mascot-svg { animation: m-bob 4s ease-in-out infinite; }
+.mascot[data-state="think"]    .mascot-svg { animation: m-think-pulse 1.2s ease-in-out infinite; }
+.mascot[data-state="cheer"]    .mascot-svg { animation: m-cheer-bounce 0.45s ease-out 2; }
+.mascot[data-state="x-eyes"]   .mascot-svg { animation: m-shake 0.18s linear 6; }
+.mascot[data-state="level-up"] .mascot-svg {
+  animation: m-levelup 0.7s ease-out 4;
+  filter: drop-shadow(0 0 12px var(--magenta)) drop-shadow(0 0 22px var(--accent));
+}
+
+/* idle: blinks every ~4s + occasional eye-shift (look around) */
+.mascot[data-state="idle"] .m-eye {
+  animation: m-blink 4.2s ease-in-out infinite;
+  transform-origin: center;
+}
+.mascot[data-state="idle"] .m-face-idle {
+  animation: m-eye-shift 9s ease-in-out infinite;
+  transform-origin: 32px 26px;
+}
+
+/* antenna wobbles in idle and think */
+.mascot[data-state="idle"]  .m-antenna { animation: m-antenna-wobble 5.5s ease-in-out infinite; transform-origin: 32px 8px; }
+.mascot[data-state="think"] .m-antenna { animation: m-antenna-wobble 1.8s ease-in-out infinite; transform-origin: 32px 8px; }
+
+/* think: dot wave + subtle head tilt */
+.mascot[data-state="think"] .m-dot-1 { animation: m-dot 1s ease-in-out infinite;       }
+.mascot[data-state="think"] .m-dot-2 { animation: m-dot 1s ease-in-out 0.16s infinite; }
+.mascot[data-state="think"] .m-dot-3 { animation: m-dot 1s ease-in-out 0.32s infinite; }
+.mascot[data-state="think"] .m-screen { animation: m-screen-flicker 2.4s ease-in-out infinite; }
+
+/* x-eyes: CRT flicker on the screen */
+.mascot[data-state="x-eyes"] .m-screen { animation: m-crt-flicker 0.16s steps(2) 8; }
+
+/* cheer: sparkles around the head */
+.m-sparkle {
+  fill: var(--amber);
+  opacity: 0;
+  animation: m-sparkle 0.7s ease-out forwards;
+}
+
+/* level-up: rays burst from screen centre */
+.m-ray {
+  fill: var(--magenta);
+  opacity: 0;
+  transform-origin: center;
+  animation: m-ray 0.8s ease-out forwards;
+}
+
+/* ── meta (level + xp bar) ─────────────────────────────────────────────── */
+
+.mascot-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  width: 80px;
+}
+
+.mascot-lvl {
+  font-family: "VT323", monospace;
+  font-size: 18px;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+  line-height: 1;
+  text-shadow: 0 0 6px rgba(184, 148, 245, 0.6);
+}
+.mascot-lvl-label { color: var(--dim); margin-right: 1px; }
+.mascot-lvl-num   { font-weight: 700; }
+
+.mascot[data-state="level-up"] .mascot-lvl {
+  color: var(--magenta);
+  animation: m-lvl-flash 0.35s steps(2) 6;
+}
+
+.mascot-xp-bar {
+  width: 64px;
+  height: 4px;
+  background: var(--bg-tint);
+  border: 1px solid var(--border);
+  overflow: hidden;
+}
+.mascot-xp-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), var(--magenta));
+  transition: width 0.4s ease-out;
+  box-shadow: 0 0 6px var(--accent);
+}
+
+.mascot-xp-text {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 9px;
+  color: var(--dim);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-top: 1px;
+}
+.mascot[data-state="level-up"] .mascot-xp-text {
+  color: var(--magenta);
+  font-weight: 700;
+  animation: m-banner 0.4s steps(2) 4;
+}
+
+/* ── confetti (level-up only) ──────────────────────────────────────────── */
+
+.mascot-confetti {
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+.mascot-confetti-piece {
+  position: absolute;
+  width: 4px;
+  height: 4px;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  animation: m-confetti 1.4s ease-out forwards;
+}
+
+/* ── keyframes ─────────────────────────────────────────────────────────── */
+
+@keyframes m-bob {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-2px); }
+}
+
+@keyframes m-blink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  94%, 96%      { transform: scaleY(0.1); }
+}
+
+@keyframes m-think-pulse {
+  0%, 100% { opacity: 0.85; }
+  50%      { opacity: 1; }
+}
+
+@keyframes m-dot {
+  0%, 100% { opacity: 0.25; transform: translateY(0); }
+  50%      { opacity: 1;    transform: translateY(-1px); }
+}
+
+@keyframes m-cheer-bounce {
+  0%   { transform: translateY(0); }
+  40%  { transform: translateY(-5px) scale(1.04); }
+  70%  { transform: translateY(0)    scale(1);    }
+  100% { transform: translateY(0); }
+}
+
+@keyframes m-shake {
+  0%, 100% { transform: translateX(0);  }
+  25%      { transform: translateX(-2px); }
+  75%      { transform: translateX(2px);  }
+}
+
+@keyframes m-levelup {
+  0%   { transform: scale(1)    rotate(0); }
+  30%  { transform: scale(1.12) rotate(-2deg); }
+  60%  { transform: scale(1.08) rotate(2deg);  }
+  100% { transform: scale(1)    rotate(0); }
+}
+
+@keyframes m-led-pulse {
+  0%   { transform: scale(1);   opacity: 1; }
+  50%  { transform: scale(1.6); opacity: 0.5; }
+  100% { transform: scale(1);   opacity: 1; }
+}
+
+@keyframes m-lvl-flash {
+  50% { opacity: 0.4; transform: scale(1.15); }
+}
+
+@keyframes m-banner {
+  50% { opacity: 0.3; }
+}
+
+@keyframes m-confetti {
+  0%   { opacity: 1; transform: translate(0, 0)              rotate(0); }
+  100% { opacity: 0; transform: translate(var(--tx), var(--ty)) rotate(360deg); }
+}
+
+@keyframes m-eye-shift {
+  0%, 18%, 100% { transform: translateX(0); }
+  22%, 38%      { transform: translateX(-1.5px); }
+  42%, 58%      { transform: translateX(0); }
+  62%, 78%      { transform: translateX(1.5px); }
+  82%           { transform: translateX(0); }
+}
+
+@keyframes m-antenna-wobble {
+  0%, 100% { transform: rotate(0); }
+  25%      { transform: rotate(-6deg); }
+  75%      { transform: rotate(6deg); }
+}
+
+@keyframes m-screen-flicker {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: 0.92; }
+}
+
+@keyframes m-crt-flicker {
+  0%, 100% { opacity: 1;   transform: translateY(0); }
+  20%      { opacity: 0.4; transform: translateY(-1px); }
+  40%      { opacity: 0.8; transform: translateY(0); }
+  60%      { opacity: 0.3; transform: translateY(1px); }
+  80%      { opacity: 0.7; transform: translateY(0); }
+}
+
+@keyframes m-sparkle {
+  0%   { opacity: 1; transform: scale(0.4); }
+  60%  { opacity: 1; transform: scale(1.6); }
+  100% { opacity: 0; transform: scale(0.4); }
+}
+
+@keyframes m-ray {
+  0%   { opacity: 0; transform: scaleY(0)   translateY(0); }
+  30%  { opacity: 1; transform: scaleY(1.2) translateY(-4px); }
+  100% { opacity: 0; transform: scaleY(0.6) translateY(-12px); }
+}
+
+/* ── reduced motion ────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .mascot *,
+  .mascot-svg,
+  .mascot-confetti-piece {
+    animation: none !important;
+    transition: none !important;
+  }
+}

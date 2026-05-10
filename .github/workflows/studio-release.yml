@@ -1,4 +1,4 @@
-name: cero studio release
+name: Vybin release
 
 # Builds the cero binary for each platform, then bundles it inside the Tauri
 # studio app and produces native installers (.msi, .dmg, .AppImage, .deb).
@@ -105,9 +105,9 @@ jobs:
         with:
           projectPath: studio
           tagName: ${{ github.ref_name }}
-          releaseName: "cero studio ${{ github.ref_name }}"
+          releaseName: "Vybin ${{ github.ref_name }}"
           releaseBody: |
-            cero studio — desktop app with the full cero self-learning agent embedded.
+            Vybin — free desktop AI agent with the full self-learning engine embedded.
             See README for setup. Standalone CLI binaries are in the matching `v*` release of the cero repo.
           releaseDraft: false
           prerelease: false

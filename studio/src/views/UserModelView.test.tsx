@@ -46,7 +46,7 @@ const MOCK_MODEL: UserModel = {
     { area: "Python", level: "intermediate", evidence_count: 5 },
   ],
   current_projects: [
-    { name: "cero studio", cwd: "/home/user/cero", status: "active", last_active_at: Date.now() - 7_200_000 },
+    { name: "vybin", cwd: "/home/user/vybin", status: "active", last_active_at: Date.now() - 7_200_000 },
     { name: "old-proj", status: "archived", last_active_at: Date.now() - 86_400_000 * 30 },
   ],
   preferences: [
@@ -209,7 +209,7 @@ describe("UserModelView — render states", () => {
 
   it("renders project names", () => {
     renderView(MOCK_MODEL);
-    expect(screen.getByText("cero studio")).toBeTruthy();
+    expect(screen.getByText("vybin")).toBeTruthy();
     expect(screen.getByText("old-proj")).toBeTruthy();
   });
 

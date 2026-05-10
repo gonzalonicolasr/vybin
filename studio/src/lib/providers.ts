@@ -73,6 +73,15 @@ export const PROVIDER_LIST: readonly ProviderMeta[] = [
     defaultModel: "llama3.2",
     fallbackModels: ["llama3.2", "llama3.1", "qwen2.5-coder"],
   },
+  {
+    // llama.cpp `llama-server` exposes an OpenAI-compatible HTTP endpoint
+    // (default http://127.0.0.1:8080/v1). Single loaded GGUF — model name is
+    // a label, the server ignores it. Defaults wired for our own Mate model.
+    id: "llamacpp",
+    label: "llama.cpp (local)",
+    defaultModel: "mate-v2",
+    fallbackModels: ["mate-v2", "mate-v1", "local-model"],
+  },
 ];
 
 export function getProviderMeta(id: string): ProviderMeta | undefined {

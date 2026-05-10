@@ -21,6 +21,7 @@ const PROVIDERS: ProviderInfo[] = [
   { id: "openai",     label: "OpenAI",       keyUrl: "https://platform.openai.com/api-keys",   envVar: "OPENAI_API_KEY"     },
   { id: "openrouter", label: "OpenRouter",   keyUrl: "https://openrouter.ai/keys",             envVar: "OPENROUTER_API_KEY" },
   { id: "ollama",     label: "Ollama",       keyUrl: "https://ollama.com",                     envVar: ""                   },
+  { id: "llamacpp",   label: "llama.cpp (Mate, local)", keyUrl: "https://github.com/ggerganov/llama.cpp", envVar: "" },
   { id: "groq",       label: "Groq",         keyUrl: "https://console.groq.com/keys",          envVar: "GROQ_API_KEY"       },
   { id: "mistral",    label: "Mistral",      keyUrl: "https://console.mistral.ai/api-keys",    envVar: "MISTRAL_API_KEY"    },
   { id: "deepseek",   label: "DeepSeek",     keyUrl: "https://platform.deepseek.com/api_keys", envVar: "DEEPSEEK_API_KEY"   },
@@ -34,6 +35,7 @@ const PROVIDER_MODELS: Record<string, string[]> = {
   openai:     ["gpt-4o", "gpt-4o-mini", "gpt-4.1"],
   openrouter: ["openrouter/auto", "anthropic/claude-3.5-sonnet", "openai/gpt-4o"],
   ollama:     ["llama3.2", "llama3.1", "qwen2.5-coder"],
+  llamacpp:   ["mate-v2", "mate-v1", "local-model"],
   groq:       ["llama-3.3-70b-versatile", "mixtral-8x7b-32768"],
   mistral:    ["mistral-large-latest", "mistral-small-latest"],
   deepseek:   ["deepseek-chat", "deepseek-coder"],
@@ -518,6 +520,11 @@ function StepApiKeys({
               </div>
               {p.id === "ollama" ? (
                 <span className="setup-hint">Ollama runs locally — no API key needed.</span>
+              ) : p.id === "llamacpp" ? (
+                <span className="setup-hint">
+                  llama.cpp runs locally on http://127.0.0.1:8080 — no API key needed.
+                  Start the server with <code>llama-server -m mate-v2.gguf --port 8080</code>.
+                </span>
               ) : (
                 <div className="setup-key-input-row">
                   <input

@@ -17,7 +17,8 @@ export type ProviderName =
   | "deepseek"
   | "openrouter"
   | "together"
-  | "ollama";
+  | "ollama"
+  | "llamacpp";
 export type SandboxName = "local" | "docker";
 export type LearningMode = "auto" | "off";
 export type ThemeName = "violet" | "lima" | "amber";

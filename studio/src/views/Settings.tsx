@@ -4,6 +4,7 @@
 
 import { useEffect, useState } from "react";
 import type { CeroSettings, ProviderName, SandboxName, LearningMode, ThemeName } from "../hooks/useSettings";
+import { isMuted, setMuted } from "../lib/mascot-sounds";
 
 // ─── voice mode types ──────────────────────────────────────────────────────────
 
@@ -47,6 +48,7 @@ const PROVIDERS: ProviderName[] = [
   "openrouter",
   "together",
   "ollama",
+  "llamacpp",
 ];
 const SANDBOXES: SandboxName[] = ["local", "docker"];
 const LEARNING_MODES: LearningMode[] = ["auto", "off"];
@@ -63,6 +65,16 @@ const PROVIDER_MODELS: Record<ProviderName, ReadonlyArray<string>> = {
   openrouter: ["openrouter/auto", "anthropic/claude-3.5-sonnet", "openai/gpt-4o"],
   together:   ["meta-llama/Llama-3.3-70B-Instruct-Turbo"],
   ollama:     ["llama3.2", "llama3.1", "qwen2.5-coder"],
+  llamacpp:   ["mate-v2", "mate-v1", "local-model"],
+};
+
+// Providers that talk an OpenAI-compatible HTTP API on a configurable
+// baseUrl. They never require an API key and benefit from a sensible
+// localhost default when the field is left empty.
+const OPENAI_COMPAT_DEFAULTS: Partial<Record<ProviderName, string>> = {
+  openai:   "https://opencode.ai/zen/go/v1 (or empty for api.openai.com)",
+  ollama:   "http://127.0.0.1:11434/v1",
+  llamacpp: "http://127.0.0.1:8080/v1",
 };
 
 export function Settings({ initial, initialVoice, onSave, onClose }: SettingsProps): React.JSX.Element {
@@ -142,12 +154,22 @@ export function Settings({ initial, initialVoice, onSave, onClose }: SettingsPro
                 value={draft.provider}
                 onChange={(e) => {
                   const next = e.target.value as ProviderName;
-                  update("provider", next);
-                  // auto-pick first model for the new provider if current isn't valid
-                  const models = PROVIDER_MODELS[next];
-                  if (!models.includes(draft.model) && models[0]) {
-                    update("model", models[0]);
-                  }
+                  setDraft((prev) => {
+                    const models = PROVIDER_MODELS[next];
+                    const nextModel = models.includes(prev.model) ? prev.model : (models[0] ?? prev.model);
+                    // Seed a sensible localhost baseUrl when switching to a
+                    // local OpenAI-compatible provider with an empty field —
+                    // never overwrite a value the user already typed.
+                    const localDefault = next === "llamacpp"
+                      ? "http://127.0.0.1:8080/v1"
+                      : next === "ollama"
+                        ? "http://127.0.0.1:11434/v1"
+                        : "";
+                    const nextBaseUrl = prev.baseUrl.trim() === "" && localDefault !== ""
+                      ? localDefault
+                      : prev.baseUrl;
+                    return { ...prev, provider: next, model: nextModel, baseUrl: nextBaseUrl };
+                  });
                 }}
               >
                 {PROVIDERS.map((p) => (
@@ -169,13 +191,13 @@ export function Settings({ initial, initialVoice, onSave, onClose }: SettingsPro
                 ))}
               </datalist>
             </Field>
-            {draft.provider === "openai" ? (
-              <Field label="base URL (OpenAI-compatible gateway)">
+            {OPENAI_COMPAT_DEFAULTS[draft.provider] !== undefined ? (
+              <Field label="base URL (OpenAI-compatible endpoint)">
                 <input
                   type="url"
                   value={draft.baseUrl}
                   onChange={(e) => update("baseUrl", e.target.value)}
-                  placeholder="https://opencode.ai/zen/go/v1 (or empty for api.openai.com)"
+                  placeholder={OPENAI_COMPAT_DEFAULTS[draft.provider]}
                 />
               </Field>
             ) : null}
@@ -288,6 +310,18 @@ export function Settings({ initial, initialVoice, onSave, onClose }: SettingsPro
                 {THEMES.map((t) => (
                   <option key={t} value={t}>{t}</option>
                 ))}
+              </select>
+            </Field>
+          </Section>
+
+          <Section title="MASCOT">
+            <Field label="mascot sounds (8-bit chirps on cheer / error / level-up)">
+              <select
+                defaultValue={isMuted() ? "off" : "on"}
+                onChange={(e) => setMuted(e.target.value === "off")}
+              >
+                <option value="off">off (default)</option>
+                <option value="on">on</option>
               </select>
             </Field>
           </Section>

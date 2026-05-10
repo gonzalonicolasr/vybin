@@ -1,4 +1,4 @@
-// useTabs — manages the multi-tab state for cero studio.
+// useTabs — manages the multi-tab state for Vybin.
 //
 // Responsibilities:
 //   - Maintain Tab[] + activeTabId in React state.

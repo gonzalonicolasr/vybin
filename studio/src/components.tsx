@@ -62,6 +62,10 @@ export interface HeaderProps {
   readonly onSettingsClick?: () => void;
   readonly onModelChange?: (modelId: string) => void;
   readonly onProviderChange?: (providerId: string) => void;
+  /** Force a sidecar restart with the current settings — used when the
+   *  status badge is offline so the user can recover without opening
+   *  Settings. */
+  readonly onReconnect?: () => void;
 }
 
 export function Header({
@@ -75,6 +79,7 @@ export function Header({
   onSettingsClick,
   onModelChange,
   onProviderChange,
+  onReconnect,
 }: HeaderProps): React.JSX.Element {
   return (
     <div className="header" data-tauri-drag-region>
@@ -339,8 +344,23 @@ export function Header({
       </div>
       <div className="header-spacer" data-tauri-drag-region></div>
       <div className="meta">
-        {online ? <span className="dot"></span> : null}
-        {online ? "online" : "offline"}
+        {online ? (
+          <>
+            <span className="dot"></span>
+            online
+          </>
+        ) : onReconnect ? (
+          <button
+            type="button"
+            className="header-reconnect-btn"
+            onClick={onReconnect}
+            title="click to reconnect the sidecar with current settings"
+          >
+            offline ↻
+          </button>
+        ) : (
+          "offline"
+        )}
       </div>
       {onSettingsClick ? (
         <button

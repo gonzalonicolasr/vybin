@@ -1,7 +1,7 @@
-# cero studio — CHECKLIST de migración
+# Vybin — CHECKLIST (pre-v0.1)
 
-> Versión actual shippada: **v7-fix3** (Desktop + MSI/NSIS installer)
-> Última actualización: durante Fase 8 (cero studio)
+> Versión actual shippada: **v0.2.0-alpha.0** (Desktop + MSI/NSIS installer)
+> Última actualización: durante Fase 8 (rebrand cero studio → Vybin)
 
 ## ✅ HECHO
 

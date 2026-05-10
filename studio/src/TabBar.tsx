@@ -1,4 +1,4 @@
-// TabBar — browser-style tab strip for cero studio.
+// TabBar — browser-style tab strip for Vybin.
 // Plus: hosts the window-controls (min/max/close) at top-right edge so they
 // sit on the very top of the window like every browser/IDE titlebar.
 //

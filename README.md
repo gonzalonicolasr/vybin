@@ -47,14 +47,17 @@ Every "AI coding agent" today looks the same: text in, text out, $20/mo. Cursor 
 
 ## ▸ install (90 seconds to first vibe)
 
+> **v0.1 is in active development — first public release coming soon.**
+> Until then, build from source (instructions below) or watch [Releases](https://github.com/gonzalonicolasr/vybin/releases) for the first tag.
+
 ```bash
-# windows (winget — pending)
+# windows (winget — post-v0.1)
 winget install Vybin.Vybin
 
-# macos (brew — pending)
+# macos (brew — post-v0.1)
 brew install --cask vybin
 
-# linux (.AppImage)
+# linux (.AppImage — available once v0.1 is tagged)
 wget https://github.com/gonzalonicolasr/vybin/releases/latest/download/vybin.AppImage
 chmod +x vybin.AppImage && ./vybin.AppImage
 ```
@@ -137,9 +140,9 @@ Every skill the agent learns and every lesson it remembers contributes to its **
 
 It's silly. It also makes you actually *want* to keep using it.
 
-### · sleep mode (roadmap)
+### · sleep mode `[coming in v0.2]`
 
-Leave Vybin running overnight. It picks up TODOs from your repo, attempts them in sandbox, opens local PRs for you to review in the morning. **Devin at $0, on your laptop, with no cloud round-trip.**
+**Not yet shipped.** The cron scheduler already lets you schedule any prompt on a timer. Sleep mode is the next step: Vybin will scan your repo for TODO comments overnight, attempt them in sandbox, and open local PRs for you to review in the morning. **Devin at $0, on your laptop, with no cloud round-trip.**
 
 ---
 

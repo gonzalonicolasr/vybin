@@ -20,6 +20,8 @@ import { useToasts } from "./hooks/useToasts";
 import { ToastContext } from "./hooks/ToastContext";
 import { notify } from "./lib/notify";
 import { Settings, DEFAULT_VOICE_MODE, type VoiceModeSettings } from "./views/Settings";
+import { Mascot } from "./Mascot";
+import { useMascot } from "./hooks/useMascot";
 import { SkillsView } from "./views/SkillsView";
 import { LessonsView } from "./views/LessonsView";
 import { UserModelView } from "./views/UserModelView";
@@ -36,7 +38,7 @@ import { ApprovalModal } from "./ApprovalModal";
 import { ClickParticles } from "./ClickParticles";
 import type { ClarifyRequest, ApprovalRequest, ClarifyResponse, ApprovalResponse, PendingRequest } from "./ipc-types";
 
-// cero studio v0.3.0 — multi-tab edition.
+// Vybin v0.3.0 — multi-tab edition.
 // Each tab owns an isolated cero sidecar process. tab_id (UUID v4) is assigned
 // by the frontend; all Tauri commands and inbound events carry it for routing.
 
@@ -108,9 +110,17 @@ export function App(): React.JSX.Element {
   const [snapshotVersion, setSnapshotVersion] = useState(0);
   const [globalError, setGlobalError] = useState<string | null>(null);
   const [snapshot, setSnapshot] = useState<SnapshotData>(EMPTY_SNAPSHOT);
+  // Mascot state machine — drives the corner CRT-head. Level/XP derive from
+  // snapshot.stats; transient states (cheer/x-eyes) are triggered from the
+  // event dispatcher below.
+  const mascot = useMascot(snapshot);
   const [learningSummary, setLearningSummary] = useState<SessionLearningSummary | null>(null);
   const importedEnvRef = useRef(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  // Auto-reconnect — per-tab backoff timers. Cleared on manual reconnect or
+  // when the tab goes ready. Exponential: 2s → 4s → 8s → 16s → 30s (cap).
+  const reconnectTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+  const reconnectAttempts = useRef<Map<string, number>>(new Map());
 
   // Voice mode state — parsed from settings.voiceMode JSON field
   const [voiceMode, setVoiceMode] = useState<VoiceModeSettings>(DEFAULT_VOICE_MODE);
@@ -223,6 +233,12 @@ export function App(): React.JSX.Element {
               sandbox: msg.sandbox,
             },
           });
+          // Reset backoff counter on successful reconnect
+          reconnectAttempts.current.delete(tabId);
+          {
+            const t = reconnectTimers.current.get(tabId);
+            if (t !== undefined) { clearTimeout(t); reconnectTimers.current.delete(tabId); }
+          }
           break;
 
         case "text-delta": {
@@ -234,6 +250,7 @@ export function App(): React.JSX.Element {
             tabId,
             setTimeout(() => { syncPendingToTab(tabId); }, 80),
           );
+          mascot.trigger("think");
           break;
         }
 
@@ -281,6 +298,7 @@ export function App(): React.JSX.Element {
         case "done":
           flushPending(tabId);
           updateTab(tabId, { busy: false });
+          mascot.trigger("cheer");
           break;
 
         case "system":
@@ -296,7 +314,8 @@ export function App(): React.JSX.Element {
             : m;
           appendTurn(tabId, { id: nextTurnId(), kind: "error", text: helpful });
           updateTab(tabId, { busy: false });
-          void notify({ title: "cero — error", body: m.slice(0, 140), kind: "error" });
+          void notify({ title: "Vybin — error", body: m.slice(0, 140), kind: "error" });
+          mascot.trigger("error");
           break;
         }
 
@@ -305,10 +324,30 @@ export function App(): React.JSX.Element {
           setSnapshotVersion((v) => v + 1);
           break;
 
-        case "sidecar-exit":
+        case "sidecar-exit": {
           updateTab(tabId, { ready: false, busy: false });
-          void notify({ title: "cero — sidecar exited", body: `Session ended (tab ${tabId.slice(0, 8)})`, kind: "warning" });
+          void notify({ title: "Vybin — sidecar exited", body: `Session ended (tab ${tabId.slice(0, 8)})`, kind: "warning" });
+          // Schedule auto-reconnect with exponential backoff (2s → 4s → 8s → 16s → 30s cap)
+          const prevAttempts = reconnectAttempts.current.get(tabId) ?? 0;
+          const delayMs = Math.min(2000 * Math.pow(2, prevAttempts), 30_000);
+          reconnectAttempts.current.set(tabId, prevAttempts + 1);
+          const existingTimer = reconnectTimers.current.get(tabId);
+          if (existingTimer !== undefined) clearTimeout(existingTimer);
+          const timer = setTimeout(() => {
+            reconnectTimers.current.delete(tabId);
+            const payload = buildSidecarPayload(settings);
+            void invoke("open_tab", {
+              tabId,
+              config: payload.config,
+              env: payload.env,
+            }).catch(() => {
+              // If this attempt also fails, the next sidecar-exit event will
+              // schedule another retry automatically.
+            });
+          }, delayMs);
+          reconnectTimers.current.set(tabId, timer);
           break;
+        }
 
         case "clarify-request":
           enqueueRequest(tabId, { kind: "clarify", req: msg as ClarifyRequest & { tab_id: string } });
@@ -316,7 +355,7 @@ export function App(): React.JSX.Element {
 
         case "approval-request":
           enqueueRequest(tabId, { kind: "approval", req: msg as ApprovalRequest & { tab_id: string } });
-          void notify({ title: "cero — approval needed", body: `${msg.dangerLevel.toUpperCase()}: ${msg.command.slice(0, 80)}`, kind: "warning" });
+          void notify({ title: "Vybin — approval needed", body: `${msg.dangerLevel.toUpperCase()}: ${msg.command.slice(0, 80)}`, kind: "warning" });
           break;
 
         case "session-end-summary":
@@ -332,9 +371,16 @@ export function App(): React.JSX.Element {
           }
           break;
 
-        case "sidecar-stderr":
-          // Silently stash — could surface in a logs panel later
+        case "sidecar-stderr": {
+          // Forward stderr lines that look like errors as toasts so the user
+          // sees why the sidecar isn't going online (bad API key, model 404,
+          // baseUrl unreachable, etc.). Skip noise like "info" / "debug".
+          const line = (msg as { line?: string }).line ?? "";
+          if (/error|fatal|fail|invalid|unauthorized|401|403|404|ECONNREF|ENOTFOUND/i.test(line)) {
+            toast.error(`sidecar: ${line.length > 200 ? `${line.slice(0, 200)}…` : line}`);
+          }
           break;
+        }
       }
     },
     [updateTab, ensurePendingInTab, syncPendingToTab, flushPending, appendTurn, enqueueRequest],
@@ -672,6 +718,23 @@ export function App(): React.JSX.Element {
         baseUrl={settings.baseUrl}
         apiKey={settings.openaiApiKey}
         onSettingsClick={() => setShowSettings(true)}
+        onReconnect={() => {
+          // Force a fresh sidecar with whatever the user has saved.
+          const payload = buildSidecarPayload(settings);
+          for (const tab of tabs) {
+            updateTab(tab.id, { ready: false, busy: false });
+          }
+          void invoke("restart_session", {
+            config: payload.config,
+            env: payload.env,
+            tabIds: tabs.map((t) => t.id),
+          })
+            .then(() => toast.info("reconnecting sidecar with current settings…"))
+            .catch((err) => {
+              setGlobalError(`Reconnect failed: ${String(err)}`);
+              toast.error(`reconnect failed: ${String(err)}`);
+            });
+        }}
         onModelChange={(modelId) => {
           // Persist + restart all tabs with the new model (env vars stay the same).
           void saveSettings({ ...settings, model: modelId }).then(async () => {
@@ -808,6 +871,13 @@ export function App(): React.JSX.Element {
         />
       ) : null}
       <ClickParticles />
+      <Mascot
+        state={mascot.state}
+        level={mascot.level}
+        xp={mascot.xp}
+        xpToNext={mascot.xpToNext}
+        xpPercent={mascot.xpPercent}
+      />
     </div>
     </ToastContext.Provider>
   );
@@ -922,13 +992,33 @@ function buildSidecarPayload(s: CeroSettings): { config: Record<string, unknown>
   if (s.awsAccessKeyId) env.AWS_ACCESS_KEY_ID = s.awsAccessKeyId;
   if (s.awsSecretAccessKey) env.AWS_SECRET_ACCESS_KEY = s.awsSecretAccessKey;
   if (s.awsRegion) env.AWS_REGION = s.awsRegion;
-  if (s.baseUrl && s.provider === "openai") env.OPENAI_BASE_URL = s.baseUrl;
+
+  // llama.cpp ships an OpenAI-compatible HTTP server (`llama-server`), so we
+  // map the provider to "openai" + base_url for the sidecar — the cero binary
+  // doesn't need a dedicated llamacpp adapter. Same trick lets us swap our
+  // own Mate model in transparently. llama.cpp ignores the API key but the
+  // OpenAI client SDK refuses to start without one, so we inject a stub.
+  const isLlamaCpp = s.provider === "llamacpp";
+  const sidecarProvider = isLlamaCpp ? "openai" : s.provider;
+  const llamaCppBaseUrl = isLlamaCpp
+    ? (s.baseUrl.trim() === "" ? "http://127.0.0.1:8080/v1" : s.baseUrl)
+    : null;
+  const sidecarBaseUrl = isLlamaCpp
+    ? llamaCppBaseUrl
+    : (s.provider === "openai" && s.baseUrl ? s.baseUrl : null);
+
+  if (sidecarBaseUrl && (s.provider === "openai" || isLlamaCpp)) {
+    env.OPENAI_BASE_URL = sidecarBaseUrl;
+  }
+  if (isLlamaCpp && !env.OPENAI_API_KEY) {
+    env.OPENAI_API_KEY = "sk-local-no-key-required";
+  }
 
   return {
     config: {
-      provider: s.provider,
+      provider: sidecarProvider,
       model: s.model || null,
-      base_url: s.provider === "openai" && s.baseUrl ? s.baseUrl : null,
+      base_url: sidecarBaseUrl,
       sandbox: s.sandbox,
       goal: s.goal || null,
       no_learning: s.learningMode === "off",

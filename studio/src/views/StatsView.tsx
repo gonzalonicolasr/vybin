@@ -1,4 +1,4 @@
-// StatsView — usage dashboard for cero studio.
+// StatsView — usage dashboard for Vybin.
 //
 // Data sources: ~/.cero/usage.db (turns, skill_usages), ~/.cero/cron.db (cron_jobs, cron_outputs).
 // Gracefully renders "no data" states when DBs are absent (fresh install).
